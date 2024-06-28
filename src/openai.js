@@ -5,6 +5,7 @@ const openai = new OpenAI({});
 
 function generatePrompt(categoryGroups, transaction, payees) {
   let prompt = 'Given I want to categorize the bank transactions in following categories:\n';
+
   categoryGroups.forEach((categoryGroup) => {
     categoryGroup.categories.forEach((category) => {
       prompt += `* ${category.name} (${categoryGroup.name}) (ID: "${category.id}") \n`;
@@ -23,6 +24,29 @@ function generatePrompt(categoryGroups, transaction, payees) {
   } else {
     prompt += `* Payee: ${transaction.imported_payee}\n`;
   }
+
+  // The merchant category pair is seperated by a period, each pairing is seperated by comma
+  // example: Soberys.Grocery,Walmart.Grocery,Eastlink.wireless,Gianttiger.Grocery
+
+  if(process.env.MERCHANT_CATEGORY_MAP){
+
+    const pairingsString = process.env.MERCHANT_CATEGORY_MAP
+
+   // Split the pairings string into individual merchant-category pairs
+   const pairs = pairingsString.split(',');
+  
+   // Loop over the pairs
+   for (let pair of pairs) {
+     // Append each pair to the prompt variable followed by a newline for readability
+     const [merchant, category] = pair.split('.');
+     prompt += `"${merchant}" => "${category}"\n`;
+     // Alternatively, if you just want to append without newline, use:
+     // prompt += pair; 
+   }
+
+   prompt +='IF NO EXPLICIT MATCHING IGNORE AND PROCEED WITH NORMAL LOGIC. CONTAINING IS OKAY.'
+  }
+   
 
   prompt += 'ANSWER BY A CATEGORY ID.DO NOT WRITE THE WHOLE SENTENCE. Do not guess, if you don\'t know answer: "idk".';
 
