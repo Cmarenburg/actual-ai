@@ -27,26 +27,22 @@ function generatePrompt(categoryGroups, transaction, payees) {
 
   // The merchant category pair is seperated by a period, each pairing is seperated by comma
   // example: Soberys.Grocery,Walmart.Grocery,Eastlink.wireless,Gianttiger.Grocery
+  if (process.env.MERCHANT_CATEGORY_MAP) {
+    const pairingsString = process.env.MERCHANT_CATEGORY_MAP;
+    const pairs = pairingsString.split(',');
 
-  if(process.env.MERCHANT_CATEGORY_MAP){
+    // Iterate over the pairs using forEach
+    pairs.forEach((pair) => {
+      // Destructure the merchant and category from the pair
+      const [merchant, category] = pair.split('.');
+      // Append each pair to the prompt variable followed by a newline for readability
+      prompt += `"${merchant}" => "${category}"\n`;
+      // Alternatively, if you just want to append without newline, use:
+      // prompt += pair;
+    });
 
-    const pairingsString = process.env.MERCHANT_CATEGORY_MAP
-
-   // Split the pairings string into individual merchant-category pairs
-   const pairs = pairingsString.split(',');
-  
-   // Loop over the pairs
-   for (let pair of pairs) {
-     // Append each pair to the prompt variable followed by a newline for readability
-     const [merchant, category] = pair.split('.');
-     prompt += `"${merchant}" => "${category}"\n`;
-     // Alternatively, if you just want to append without newline, use:
-     // prompt += pair; 
-   }
-
-   prompt +='IF NO EXPLICIT MATCHING IGNORE AND PROCEED WITH NORMAL LOGIC. CONTAINING IS OKAY.'
+    prompt += 'IF NO EXPLICIT MATCHING IGNORE AND PROCEED WITH NORMAL LOGIC. CONTAINing IS OKAY.';
   }
-   
 
   prompt += 'ANSWER BY A CATEGORY ID.DO NOT WRITE THE WHOLE SENTENCE. Do not guess, if you don\'t know answer: "idk".';
 
