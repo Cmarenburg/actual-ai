@@ -76,7 +76,6 @@ async function processTransactions() {
     });
   }
 
- 
   for (let i = 0; i < uncategorizedTransactions.length; i++) {
     await processTransaction(uncategorizedTransactions[i], i, uncategorizedTransactions.length);
   }
