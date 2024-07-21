@@ -6,6 +6,8 @@ const { suppressConsoleLogsAsync } = require('./utils');
 const NOTES_NOT_GUESSED = 'actual-ai could not guess this category';
 const NOTES_GUESSED = 'actual-ai guessed this category';
 
+const ADDITIONAL_EXCLUDES = process.env.ADDITIONAL_EXCLUDES.split(',');
+
 function findUUIDInString(str) {
   const regex = /[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}/g;
   const matchResult = str.match(regex);
@@ -31,11 +33,16 @@ async function processTransactions() {
   const categories = await actualApi.getCategories();
   const payees = await actualApi.getPayees();
   const transactions = await actualApi.getTransactions();
+
+  console.log(transactions);
+
   const uncategorizedTransactions = transactions.filter(
     (transaction) => !transaction.category
-          && transaction.transfer_id === null
-          && transaction.starting_balance_flag !== true
-          && transaction.notes.includes(NOTES_NOT_GUESSED) === false,
+      && transaction.transfer_id === null
+      && transaction.starting_balance_flag !== true
+      // This line handles the null `notes`
+      && (transaction.notes ? !transaction.notes.includes(NOTES_NOT_GUESSED) : true)
+      && ADDITIONAL_EXCLUDES.some((exclude) => transaction.imported_payee.includes(exclude)),
   );
 
   for (let i = 0; i < uncategorizedTransactions.length; i++) {
