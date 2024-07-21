@@ -34,8 +34,6 @@ async function processTransactions() {
   const payees = await actualApi.getPayees();
   const transactions = await actualApi.getTransactions();
 
-  console.log(transactions);
-
   const uncategorizedTransactions = transactions.filter(
     (transaction) => !transaction.category
       && transaction.transfer_id === null
