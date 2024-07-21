@@ -50,9 +50,9 @@ async function processTransactions() {
 
     // If it's a parent transaction, process each child transaction
     if (transaction.is_parent) {
-      for (const child of transaction.subtransactions) {
-        await processTransaction(child, index, total); // Recursive call for each child
-      }
+      // for (const child of transaction.subtransactions) {
+      //   await processTransaction(child, index, total); // Recursive call for each child
+      // }
       return; // Skip the rest of the processing for the parent transaction
     }
 
