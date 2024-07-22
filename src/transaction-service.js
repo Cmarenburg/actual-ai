@@ -35,7 +35,7 @@ async function processTransactions() {
     (transaction) => !transaction.category
           && transaction.transfer_id === null
           && transaction.starting_balance_flag !== true
-          && transaction.notes.includes(NOTES_NOT_GUESSED) === false
+          && (transaction.notes ? !transaction.notes.includes(NOTES_NOT_GUESSED) : true)
           && transactions.is_parent !== true,
   );
 
