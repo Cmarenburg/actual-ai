@@ -36,7 +36,7 @@ async function processTransactions() {
           && transaction.transfer_id === null
           && transaction.starting_balance_flag !== true
           && (transaction.notes ? !transaction.notes.includes(NOTES_NOT_GUESSED) : true)
-          && transactions.is_parent !== true,
+          && transaction.is_parent !== true,
   );
 
   for (let i = 0; i < uncategorizedTransactions.length; i++) {
